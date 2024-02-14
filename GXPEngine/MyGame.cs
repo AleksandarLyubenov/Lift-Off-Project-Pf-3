@@ -28,8 +28,8 @@ public class MyGame : Game {
         AddChild(canvas);
 
         LoadLevel("mainmenu.tmx"); // Loads initial level
-        bg_music = new Sound("background_music.mp3", true, true).Play();
-        bg_music.Volume = 0.5f;
+        //bg_music = new Sound("background_music.mp3", true, true).Play();
+        //bg_music.Volume = 0.5f;
 
 		// Add the canvas to the engine to display it:
 		

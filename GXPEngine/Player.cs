@@ -19,12 +19,14 @@ public class Player : AnimationSprite
         IDLE,
         WALKRIGHT,
         WALKLEFT,
+        WALKUP,
+        WALKDOWN,
     }
 
     private SoundChannel jump;
     private SoundChannel collect_sound;
 
-    private State _state;
+    //private State _state;
     string resetLevelName;
     float jumpStrength;
     float speed; 
@@ -49,9 +51,9 @@ public class Player : AnimationSprite
     }
 
     
-    bool grounded = true;
-    bool jumping = false;
-    float jumpY = 0;
+    //bool grounded = true;
+    //bool jumping = false;
+    //float jumpY = 0;
 
 
     // VSync On settings:
@@ -78,35 +80,35 @@ public class Player : AnimationSprite
             //game.FindObjectOfType<Level>();   // Inefficient! (Also: can be null)
             (Level)parent;                    // Is the parent always a Level...? (moving platforms?)
         
-        handleState();
+        //handleState();
         float oldX = x;
         float oldY = y;
 
         //float vx = moveTo.x * deltaTimeClamped / 15;
         //float vy = moveTo.y * deltaTimeClamped / 15;
 
-        if (!jumping)
-        {
-            moveTo.y = gravity;
+        //if (!jumping)
+        //{
+        //    moveTo.y = gravity;
 
-            if (Input.GetKeyDown(Key.W) && grounded)
-            {
-                grounded = false;
-                jumping = true;
-                jumpY = y;
-                moveTo.y = -jumpStrength;
-                jump = new Sound("jump.mp3", false, false).Play();
-            }
-        }
-        else
-        {
-            moveTo.y = -jumpStrength;
-            float diffJump = jumpY - y;
-            if (diffJump >= 144)
-            {
-                jumping = false;
-            }
-        }
+        //    if (Input.GetKeyDown(Key.W) && grounded)
+        //    {
+        //        grounded = false;
+        //        jumping = true;
+        //        jumpY = y;
+        //        moveTo.y = -jumpStrength;
+        //        jump = new Sound("jump.mp3", false, false).Play();
+        //    }
+        //}
+        //else
+        //{
+        //    moveTo.y = -jumpStrength;
+        //    float diffJump = jumpY - y;
+        //    if (diffJump >= 144)
+        //    {
+        //        jumping = false;
+        //    }
+        //}
 
         if (y >= (myLevel.maxY))
         {
@@ -114,14 +116,86 @@ public class Player : AnimationSprite
         }
 
         MoveUntilCollision(moveTo.x, 0);
-        Collision col = MoveUntilCollision(0, moveTo.y);
+        MoveUntilCollision(0, moveTo.y);
 
-        if (col != null)
+        if (Input.GetKey(Key.A)) // && !(Input.GetKey(Key.LEFT_SHIFT)))
+        {
+            moveTo.x = -speed;
+
+            if (counter > 10)
+            {
+                counter = 0;
+                frame++;
+                if (frame == 13) // 13 - end of walking to the left
+                {
+                    frame = 10;
+                }
+                SetFrame(frame); // AnimationSprite method
+            }
+        }
+        else if (Input.GetKey(Key.D)) // && !(Input.GetKey(Key.LEFT_SHIFT)))
+        {
+            moveTo.x = speed;
+
+            if (counter > 10)
+            {
+                counter = 0;
+                frame++;
+                if (frame == 3) // 3 - end of walking to the right
+                {
+                    frame = 0;
+                }
+                SetFrame(frame); // AnimationSprite method
+            }
+        }
+        else
+        {
+            moveTo.x = 0;
+            frame = 0;
+        }
+
+        if (Input.GetKey(Key.S)) // && !(Input.GetKey(Key.LEFT_SHIFT)))
+        {
+            moveTo.y = speed;
+
+            if (counter > 10)
+            {
+                counter = 0;
+                frame++;
+                if (frame == 3) // 3 - end of walking to the right
+                {
+                    frame = 0;
+                }
+                SetFrame(frame); // AnimationSprite method
+            }
+        }
+        else if (Input.GetKey(Key.W)) // && !(Input.GetKey(Key.LEFT_SHIFT)))
+        {
+            moveTo.y = -speed;
+
+            if (counter > 10)
+            {
+                counter = 0;
+                frame++;
+                if (frame == 13) // 13 - end of walking to the left
+                {
+                    frame = 10;
+                }
+                SetFrame(frame); // AnimationSprite method
+            }
+        }
+        else
         {
             moveTo.y = 0;
-            grounded = true;
-            jumping = false;
+            frame = 0;
         }
+
+        //if (col != null)
+        //{
+        //    moveTo.y = 0;
+        //    grounded = true;
+        //    jumping = false;
+        //}
 
         GameObject[] collisions = GetCollisions();
         if (collisions.Length>0)
@@ -156,110 +230,156 @@ public class Player : AnimationSprite
                 // How to deal?
                 x = oldX;
                 y = oldY;
-                grounded = true;
+                //grounded = true;
             }
         }
     }
 
-    void handleState()
-    {
-        switch (_state)
-        {
-            case State.IDLE:
-                handleIdleState();
-                break;
-            case State.WALKRIGHT:
-                handleWalkRightState();
-                break;
-            case State.WALKLEFT:
-                handleWalkLeftState();
-                break;
-        }
-    }
+    //void handleState()
+    //{
+    //    switch (_state)
+    //    {
+    //        case State.IDLE:
+    //            handleIdleState();
+    //            break;
+    //        case State.WALKRIGHT:
+    //            handleWalkRightState();
+    //            break;
+    //        case State.WALKLEFT:
+    //            handleWalkLeftState();
+    //            break;
+    //        case State.WALKUP:
+    //            handleWalkUpState();
+    //            break;
+    //        case State.WALKDOWN:
+    //            handleWalkDownState();
+    //            break;
+    //    }
+    //}
 
-    void handleIdleState()
-    {
-        moveTo.x = 0;
-        SetFrame(frame);
-        if (Input.GetKey(Key.A)) // && !(Input.GetKey(Key.LEFT_SHIFT)))
-        {
-            setState(State.WALKLEFT);
-            frame = 10;
-        }
-        else if (Input.GetKey(Key.D)) // && !(Input.GetKey(Key.LEFT_SHIFT)))
-        {
-            setState(State.WALKRIGHT);
-            frame = 0;
-        }
-    }
+    //void handleIdleState()
+    //{
+    //    moveTo.x = 0;
+    //    moveTo.y = 0;
+    //    SetFrame(frame);
+    //    if (Input.GetKey(Key.A)) // && !(Input.GetKey(Key.LEFT_SHIFT)))
+    //    {
+    //        setState(State.WALKLEFT);
+    //        frame = 10;
+    //    }
+    //    else if (Input.GetKey(Key.D)) // && !(Input.GetKey(Key.LEFT_SHIFT)))
+    //    {
+    //        setState(State.WALKRIGHT);
+    //        frame = 0;
+    //    }
+    //    else if (Input.GetKey(Key.S)) // && !(Input.GetKey(Key.LEFT_SHIFT)))
+    //    {
+    //        setState(State.WALKUP);
+    //        frame = 0;
+    //    }
+    //    else if (Input.GetKey(Key.W)) // && !(Input.GetKey(Key.LEFT_SHIFT)))
+    //    {
+    //        setState(State.WALKDOWN);
+    //        frame = 0;
+    //    }
+    //}
 
-    void handleWalkLeftState()
-    {
-        Level myLevel = (Level)parent;
-        if (Input.GetKey(Key.LEFT_SHIFT) && x <= myLevel.maxX)
-        {
-            moveTo.x = -speed * 2;
-        }
-        else
-        {
-            moveTo.x = -speed;
-        }
+    //void handleWalkLeftState()
+    //{
+    //    moveTo.x = -speed;
 
-        if (counter > 10)
-        {
-            counter = 0;
-            frame++;
-            if (frame == 13) // 13 - end of walking to the left
-            {
-                frame = 10;
-            }
-            SetFrame(frame); // AnimationSprite method
-        }
+    //    if (counter > 10)
+    //    {
+    //        counter = 0;
+    //        frame++;
+    //        if (frame == 13) // 13 - end of walking to the left
+    //        {
+    //            frame = 10;
+    //        }
+    //        SetFrame(frame); // AnimationSprite method
+    //    }
 
-        if (!(Input.GetKey(Key.A)))
-        {
-            setState(State.IDLE);
-            frame = 9;
-        }
+    //    if (!(Input.GetKey(Key.A)))
+    //    {
+    //        setState(State.IDLE);
+    //        frame = 9;
+    //    }
 
-    }
+    //}
 
-    void handleWalkRightState()
-    {
-        Level myLevel = (Level)parent;
-        if (Input.GetKey(Key.LEFT_SHIFT) && x <= myLevel.maxX)
-        {
-            moveTo.x = speed * 2;
-        }
-        else
-        {
-            moveTo.x = speed;
-        }
+    //void handlewalkrightstate()
+    //{
+    //    moveto.x = speed;
 
-        if (counter > 10)
-        {
-            counter = 0;
-            frame++;
-            if (frame == 3) // 3 - end of walking to the right
-            {
-                frame = 0;
-            }
-            SetFrame(frame); // AnimationSprite method
-        }
+    //    if (counter > 10)
+    //    {
+    //        counter = 0;
+    //        frame++;
+    //        if (frame == 3) // 3 - end of walking to the right
+    //        {
+    //            frame = 0;
+    //        }
+    //        setframe(frame); // animationsprite method
+    //    }
 
-        if (!(Input.GetKey(Key.D)))
-        {
-            setState(State.IDLE);
-            frame = 4;
-        }
+    //    if (!(input.getkey(key.d)))
+    //    {
+    //        setstate(state.idle);
+    //        frame = 4;
+    //    }
 
-    }
+    //}
 
-    void setState(State newState)
-    {
-        if (_state != newState)
-        {
-            _state = newState;
-        }
-    }
+    //void handleWalkUpState()
+    //{
+    //    moveTo.y = speed;
+
+    //    if (counter > 10)
+    //    {
+    //        counter = 0;
+    //        frame++;
+    //        if (frame == 3) // 3 - end of walking to the right
+    //        {
+    //            frame = 0;
+    //        }
+    //        SetFrame(frame); // AnimationSprite method
+    //    }
+
+    //    if (!(Input.GetKey(Key.S)))
+    //    {
+    //        setState(State.IDLE);
+    //        frame = 4;
+    //    }
+    //}
+
+    //void handleWalkDownState()
+    //{
+    //    moveTo.y = -speed;
+
+    //    if (counter > 10)
+    //    {
+    //        counter = 0;
+    //        frame++;
+    //        if (frame == 13) // 13 - end of walking to the left
+    //        {
+    //            frame = 10;
+    //        }
+    //        SetFrame(frame); // AnimationSprite method
+    //    }
+
+    //    if (!(Input.GetKey(Key.W)))
+    //    {
+    //        setState(State.IDLE);
+    //        frame = 9;
+    //    }
+
+    //}
+
+    //void setState(State newState)
+    //{
+    //    if (_state != newState)
+    //    {
+    //        _state = newState;
+    //    }
+    //}
 }

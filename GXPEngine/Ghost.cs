@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Linq.Expressions;
+using System.Runtime.CompilerServices;
 using System.Text;
 using System.Threading.Tasks;
 using GXPEngine;
@@ -13,38 +14,57 @@ public class Ghost : AnimationSprite
     int counter;
     int frame;
     int speed = 1;
-    float startX;
+    static Random random = new Random();
+    int direction = 1;
 
     public Ghost(int Px, int Py, TiledObject obj = null) : base("Ghost.png",4,3)
     {
         x = Px;
         y = Py;
         collider.isTrigger = true;
-        startX = x;
     }
 
     public Ghost(TiledObject obj = null) : base("Ghost.png",4,3)
     {
         collider.isTrigger = true;
         targetDistance = obj.GetFloatProperty("moveDistance");
+        switchDirection();
     }
 
+    Vector2 moveTo;
 
     void walkTo()
     {
-        // Check if the Destroyer is at the target position
-        if (Mathf.Abs(x - startX) >= targetDistance)
+        // Move(speed, 0); // Move in the current direction
+        switch (direction)
         {
-            // Change direction when reaching the target
-            speed = -speed;
-            startX = x; // Update the startX position for the next iteration
+            case 0: // Left
+                x -= speed;
+                break;
+            case 1: // Right
+                x += speed;
+                break;
+            case 2: // Up
+                y -= speed;
+                break;
+            case 3: // Down
+                y += speed;
+                break;
         }
+    }
 
-        Move(speed, 0); // Move in the current direction
+    void switchDirection()
+    {
+        //speed = -speed;
+        //startX = x;
+        direction = random.Next(4);
+        Console.WriteLine(direction);
     }
 
     void Update()
     {
+        float oldX = x;
+        float oldY = y;
         walkTo();
         counter++;
         if (counter > 18)
@@ -57,6 +77,18 @@ public class Ghost : AnimationSprite
             }
             SetFrame(frame); // AnimationSprite method
         }
-    }
 
+        GameObject[] collisions = GetCollisions();
+        if (collisions.Length > 0)
+        {
+            Console.WriteLine("Number of Collissions: " + collisions.Length);
+        }
+        for (int i = 0; i < collisions.Length; i++)
+        {
+            Console.WriteLine("Colliding with " + collisions[i].name); // Adds collision with anything that is not special (i.e. targets, destroyers, gates)
+            x = oldX;
+            y = oldY;
+            switchDirection();
+        }
+    }
 }
