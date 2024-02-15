@@ -53,8 +53,6 @@ public class Ghost : AnimationSprite
 
     void switchDirection()
     {
-        //speed = -speed;
-        //startX = x;
         direction = random.Next(4);
         Console.WriteLine(direction);
     }
