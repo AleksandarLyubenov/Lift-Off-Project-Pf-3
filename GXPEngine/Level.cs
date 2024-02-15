@@ -38,8 +38,10 @@ class Level : GameObject
         loader.addColliders = false;
         loader.LoadImageLayers();
         loader.rootObject = this;
+        loader.LoadTileLayers(0);
         loader.addColliders = true;
-        loader.LoadTileLayers(); // loads tiles (ground, etc)
+        loader.LoadTileLayers(1);
+        loader.LoadTileLayers(2); // loads tiles (ground, etc)
         loader.autoInstance = true;
         loader.LoadObjectGroups(); // Loads objects
 

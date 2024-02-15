@@ -8,7 +8,7 @@ using System.Threading.Tasks;
 using GXPEngine;
 using GXPEngine.Core;
 using TiledMapParser;
-public class Ghost : AnimationSprite
+public class Specter : AnimationSprite
 {
     float targetDistance;
     int counter;
@@ -16,18 +16,21 @@ public class Ghost : AnimationSprite
     int speed = 1;
     static Random random = new Random();
     int direction = 1;
+    float directionSwitchTime;
 
-    public Ghost(int Px, int Py, TiledObject obj = null) : base("Ghost.png",4,3)
+    public Specter(int Px, int Py, TiledObject obj = null) : base("Ghost.png", 4, 3)
     {
         x = Px;
         y = Py;
         collider.isTrigger = true;
+        directionSwitchTime = random.Next(2, 5);
     }
 
-    public Ghost(TiledObject obj = null) : base("Ghost.png",4,3)
+    public Specter(TiledObject obj = null) : base("Ghost.png", 4, 3)
     {
         collider.isTrigger = true;
         targetDistance = obj.GetFloatProperty("moveDistance");
+        directionSwitchTime = random.Next(2, 5);
         switchDirection();
     }
 
@@ -53,16 +56,42 @@ public class Ghost : AnimationSprite
 
     void switchDirection()
     {
-        //speed = -speed;
-        //startX = x;
         direction = random.Next(4);
         Console.WriteLine(direction);
+    }
+
+    void checkBounds()
+    {
+        if (parent != null)
+        {
+            Level myLevel = (Level)parent;
+            if (x <= 0 || x >= myLevel.maxX)
+            {
+                switchDirection();
+                directionSwitchTime = random.Next(2, 5);
+            }
+            if (y <= 0 || y >= myLevel.maxY)
+            {
+                switchDirection();
+                directionSwitchTime = random.Next(2, 5);
+            }
+        }
     }
 
     void Update()
     {
         float oldX = x;
         float oldY = y;
+
+        float elapsedTime = Time.deltaTime / 1000f; // Time.deltaTime is in milliseconds, so convert to seconds
+        directionSwitchTime -= elapsedTime; // Reduce the time remaining for direction switch
+
+        if (directionSwitchTime <= 0)
+        {
+            switchDirection();
+            directionSwitchTime = random.Next(2, 5); // Randomize the next switch time between 2 to 4 seconds
+        }
+
         walkTo();
         counter++;
         if (counter > 18)
@@ -75,18 +104,6 @@ public class Ghost : AnimationSprite
             }
             SetFrame(frame); // AnimationSprite method
         }
-
-        GameObject[] collisions = GetCollisions();
-        if (collisions.Length > 0)
-        {
-            Console.WriteLine("Number of Collissions: " + collisions.Length);
-        }
-        for (int i = 0; i < collisions.Length; i++)
-        {
-            Console.WriteLine("Colliding with " + collisions[i].name); // Adds collision with anything that is not special (i.e. targets, destroyers, gates)
-            x = oldX;
-            y = oldY;
-            switchDirection();
-        }
+        checkBounds();
     }
 }

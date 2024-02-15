@@ -16,10 +16,8 @@ public class MyGame : Game {
 	public int Score = 0;
     private SoundChannel bg_music;
 
-    public MyGame() : base(1366, 768, false, true, 1366, 768, false)     // Create a window that's 800x600 and NOT fullscreen
+    public MyGame() : base(1366, 768, false, false, 1366, 768, false)     // Create a window that's 800x600 and NOT fullscreen
 	{
-        // Draw some things on a canvas:
-
         //SetVSync(true);
         EasyDraw canvas = new EasyDraw(1366, 768, false);
         
@@ -30,8 +28,6 @@ public class MyGame : Game {
         LoadLevel("mainmenu.tmx"); // Loads initial level
         //bg_music = new Sound("background_music.mp3", true, true).Play();
         //bg_music.Volume = 0.5f;
-
-		// Add the canvas to the engine to display it:
 		
 		Console.WriteLine("MyGame initialized");
 	}
@@ -99,6 +95,4 @@ public class MyGame : Game {
     {
         new MyGame().Start();                   // Create a "MyGame" and start it
 	}
-
-    
 }
