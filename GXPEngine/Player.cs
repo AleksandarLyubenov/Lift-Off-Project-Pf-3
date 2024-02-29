@@ -15,14 +15,22 @@ using TiledMapParser;
 public class Player : AnimationSprite
 {
     private SoundChannel collect_sound;
+    private SoundChannel health_pickup;
+    private SoundChannel energy_pickup;
+    private SoundChannel player_hurt;
+    private SoundChannel flashing_light;
 
     string resetLevelName;
     float jumpStrength;
     float speed; 
     float gravity;
     int counter;
+    int currentGameFrame = 0;
     int frame;
-
+    public int health;
+    public int energy;
+    bool usingFlashlight = false;
+    public int takenDamage = 0;
 
     //System.Random random = new System.Random();
     public Player(string filename, int Px, int Py, TiledObject obj=null) : base("chick_player.png", 7, 2) // base(filename) - when player is a sprite
@@ -37,6 +45,8 @@ public class Player : AnimationSprite
         jumpStrength = obj.GetFloatProperty("jumpStrength", 8.2f);
         speed = obj.GetFloatProperty("speed", 3.7f);
         gravity = obj.GetFloatProperty("gravity", 9.8f);
+        energy = obj.GetIntProperty("energy", 0);
+        health = 2;
     }
 
     Vector2 moveTo;
@@ -46,27 +56,56 @@ public class Player : AnimationSprite
 
     void Update() // Update holds the movement controller (with boundaries) and collision checks
     {
-        counter++;
+        if(currentGameFrame >= 60)
+        {
+            currentGameFrame = 0;
+        }
+        else
+        {
+            currentGameFrame++;
+        }
+
+        if (currentGameFrame % 12 == 0)
+        {
+            counter++;
+            SetFrame(frame);
+        }
+
         Level myLevel = (Level)parent;                    // Is the parent always a Level...? (moving platforms?)
         
         float oldX = x;
         float oldY = y;
 
-        if (y >= (myLevel.maxY))
+        if (myLevel != null)
         {
-            ((MyGame)game).LoadLevel(resetLevelName);
+            if (y >= (myLevel.maxY))
+            {
+                ((MyGame)game).LoadLevel(resetLevelName);
+                ((MyGame)game).timerSeconds = 180;
+            }
         }
-
+        
         MoveUntilCollision(moveTo.x, 0);
         MoveUntilCollision(0, moveTo.y);
+
+        if (Input.GetKeyDown(Key.SPACE) && usingFlashlight == false && energy != 0)
+        {
+            flashing_light = new Sound("FlashLight_On.wav", false, false).Play();
+            usingFlashlight = true;
+            energy--;
+        }
+
+        if (Input.GetKeyUp(Key.SPACE) && usingFlashlight == true)
+        {
+            usingFlashlight = false;
+        }
 
         if (Input.GetKey(Key.A)) // && !(Input.GetKey(Key.LEFT_SHIFT)))
         {
             moveTo.x = -speed;
 
-            if (counter > 10)
+            if (counter < 16)
             {
-                counter = 0;
                 frame++;
                 if (frame == 13) // 13 - end of walking to the left
                 {
@@ -79,9 +118,8 @@ public class Player : AnimationSprite
         {
             moveTo.x = speed;
 
-            if (counter > 10)
+            if (counter < 16)
             {
-                counter = 0;
                 frame++;
                 if (frame == 3) // 3 - end of walking to the right
                 {
@@ -100,9 +138,8 @@ public class Player : AnimationSprite
         {
             moveTo.y = speed;
 
-            if (counter > 10)
+            if (counter < 16)
             {
-                counter = 0;
                 frame++;
                 if (frame == 3) // 3 - end of walking to the right
                 {
@@ -115,15 +152,14 @@ public class Player : AnimationSprite
         {
             moveTo.y = -speed;
 
-            if (counter > 10)
+            if (counter < 16)
             {
-                counter = 0;
                 frame++;
                 if (frame == 13) // 13 - end of walking to the left
                 {
                     frame = 10;
                 }
-                SetFrame(frame); // AnimationSprite method
+                 // AnimationSprite method
             }
         }
         else
@@ -135,27 +171,60 @@ public class Player : AnimationSprite
         GameObject[] collisions = GetCollisions();
         if (collisions.Length>0)
         {
-            Console.WriteLine("Number of Collissions: " + collisions.Length);
+            //Console.WriteLine("Number of Collissions: " + collisions.Length);
         }
         for (int i = 0; i < collisions.Length; i++)
         {
             if (collisions[i] is Target)
             {
                 collisions[i].Destroy();
-                ((MyGame)game).Score++;
-                pickedUpItems++;
-                Console.WriteLine(pickedUpItems);
-                collect_sound = new Sound("collect_sound.mp3", false, false).Play();
+                ((MyGame)game).Score += 25;
+                collect_sound = new Sound("Collect_points.wav", false, false).Play();
             }
             else if (collisions[i] is Ghost || collisions[i] is Specter)
             {
-                ((MyGame)game).Score = ((MyGame)game).Score - pickedUpItems;
-                pickedUpItems = 0;
-                //Console.WriteLine(((MyGame)game).Score);
-                ((MyGame)game).LoadLevel(resetLevelName);
-
-            } else if (collisions[i] is Gate)
+                if (health == 0)
+                {
+                    ((MyGame)game).LoadLevel("badscreen.tmx");
+                }
+                else
+                {
+                    health--;
+                    ((MyGame)game).Score -= 5;
+                    collisions[i].Destroy();
+                    takenDamage++;
+                    player_hurt = new Sound("Hurt_losing_one_life.wav", false, false).Play();
+                }
+            }
+            else if (collisions[i] is HealthPickup)
             {
+                if (health == 2)
+                {
+                    Console.WriteLine("Already at full health!");
+                }
+                else if (health < 2 && health > 0)
+                {
+                    collisions[i].Destroy();
+                    health++;
+                    collect_sound = new Sound("Collect_life.wav", false, false).Play();
+                }
+            }
+            else if (collisions[i] is Battery)
+            {
+                if (energy == 3)
+                {
+                    Console.WriteLine("Already at full charge!");
+                }
+                else if (energy <= 2 && energy >= 0)
+                {
+                    energy++;
+                    collect_sound = new Sound("Collect_flashlight_charge.wav", false, false).Play();
+                    collisions[i].Destroy();
+                }
+            }
+            else if (collisions[i] is Gate)
+            {
+                ((MyGame)game).levelComplete = true;
                 Gate gate = (Gate)collisions[i];
                 ((MyGame)game).LoadLevel(gate.LevelName); // using collisions it gets the name of the level from the gate and loads it using LoadLevel
             }

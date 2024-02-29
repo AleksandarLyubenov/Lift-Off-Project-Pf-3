@@ -41,13 +41,18 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Battery.cs" />
+    <Compile Include="BatteryTracker.cs" />
     <Compile Include="Button.cs" />
+    <Compile Include="DamagedOverlay.cs" />
     <Compile Include="Ghost.cs" />
     <Compile Include="Gate.cs" />
     <Compile Include="GXPEngine\AddOns\Gizmos.cs" />
     <Compile Include="GXPEngine\AddOns\SpriteBatch.cs" />
     <Compile Include="GXPEngine\AddOns\TiledLoader.cs" />
     <Compile Include="GXPEngine\RestartButton.cs" />
+    <Compile Include="HealthPickup.cs" />
+    <Compile Include="HeartTracker.cs" />
     <Compile Include="Level.cs" />
     <Compile Include="MyGame.cs" />
     <Compile Include="GXPEngine\Core\Canvas.cs" />
@@ -87,6 +92,7 @@
     <Compile Include="GXPEngine\FMOD\FMODSoundSystem.cs" />
     <Compile Include="GXPEngine\SoLoud\Soloud.cs" />
     <Compile Include="GXPEngine\SoLoud\SoloudSoundSystem.cs" />
+    <Compile Include="Overlay.cs" />
     <Compile Include="Player.cs" />
     <Compile Include="Specter.cs" />
     <Compile Include="Target.cs" />

@@ -10,21 +10,27 @@ using GXPEngine.Core;
 using TiledMapParser;
 public class Ghost : AnimationSprite
 {
+    Player player;
     float targetDistance;
     int counter;
+    int currentGameFrame = 0;
     int frame;
     int speed = 1;
     static Random random = new Random();
     int direction = 1;
+    int killDistance = 312;
+    int playerEnergy = 0;
 
-    public Ghost(int Px, int Py, TiledObject obj = null) : base("Ghost.png",4,3)
+    private SoundChannel hurt_enemy;
+
+    public Ghost(int Px, int Py, TiledObject obj = null) : base("Stumbler_anim.png", 8, 8)
     {
         x = Px;
         y = Py;
         collider.isTrigger = true;
     }
 
-    public Ghost(TiledObject obj = null) : base("Ghost.png",4,3)
+    public Ghost(TiledObject obj = null) : base("Stumbler_anim.png", 8, 8)
     {
         collider.isTrigger = true;
         targetDistance = obj.GetFloatProperty("moveDistance");
@@ -33,6 +39,7 @@ public class Ghost : AnimationSprite
 
     void walkTo()
     {
+        
         // Move(speed, 0); // Move in the current direction
         switch (direction)
         {
@@ -47,41 +54,130 @@ public class Ghost : AnimationSprite
                 break;
             case 3: // Down
                 y += speed;
-                break;
+            break;
         }
     }
 
     void switchDirection()
     {
         direction = random.Next(4);
-        Console.WriteLine(direction);
     }
 
     void Update()
     {
+        player = ((MyGame)game).player;
+
+        if (currentGameFrame >= 60)
+        {
+            currentGameFrame = 0;
+        }
+        else
+        {
+            currentGameFrame++;
+        }
+
+        if (direction == 0)
+        {
+            if (counter <= 16)
+            {
+                frame++;
+                if (frame > 15) // 3 - end of walking to the right
+                {
+                    frame = 0;
+                }
+            }
+            else
+            {
+                counter = 0;
+            }
+        }
+        else if (direction == 1)
+        {
+            if (counter <= 16)
+            {
+                frame++;
+                if (frame > 31) // 3 - end of walking to the right
+                {
+                    frame = 16;
+                }
+            }
+            else
+            {
+                counter = 0;
+            }
+        }
+        else if (direction == 2)
+        {
+            if (counter <= 16)
+            {
+                frame++;
+                if (frame > 63) // 3 - end of walking to the right
+                {
+                    frame = 48;
+                }
+            }
+            else
+            {
+                counter = 0;
+            }
+        }
+        else if (direction == 3)
+        {
+            if (counter <= 16)
+            {
+                frame++;
+                if (frame > 47) // 3 - end of walking to the right
+                {
+                    frame = 32;
+                }
+            }
+            else
+            {
+                counter = 0;
+            }
+        }
+
         float oldX = x;
         float oldY = y;
         walkTo();
-        counter++;
-        if (counter > 18)
+        if (currentGameFrame % 12 == 0)
         {
-            counter = 0;
-            frame++;
-            if (frame == 3) // 3 - end of walking to the right
+            counter++;
+            SetFrame(frame);
+        }
+        if (player != null)
+        {
+            if (Input.GetKeyDown(Key.SPACE) && playerEnergy != player.energy)
             {
-                frame = 0;
+                // Calculate distance between ghost and player
+                float distance = Mathf.Sqrt(Mathf.Pow(player.x - x, 2) + Mathf.Pow(player.y - y, 2));
+
+                // If player is within 312 pixels
+                if (distance <= 312)
+                {
+                    // Destroy the ghost
+                    hurt_enemy = new Sound("Monster_dying.wav", false, false).Play();
+                    ((MyGame)game).Score += 3;
+                    LateDestroy();
+                    return;
+                }
+                else
+                {
+                    // Print how far away the player is
+                    Console.WriteLine("Player is " + (distance - 312) + " pixels away from the Ghost.");
+                }
+                playerEnergy = player.energy;
             }
-            SetFrame(frame); // AnimationSprite method
         }
 
         GameObject[] collisions = GetCollisions();
         if (collisions.Length > 0)
         {
-            Console.WriteLine("Number of Collissions: " + collisions.Length);
+            //Console.WriteLine("Number of Collissions: " + collisions.Length);
         }
         for (int i = 0; i < collisions.Length; i++)
         {
-            Console.WriteLine("Colliding with " + collisions[i].name); // Adds collision with anything that is not special (i.e. targets, destroyers, gates)
+           /* Console.WriteLine("Colliding with " + collisions[i].name);*/ // Adds collision with anything that is not special (i.e. targets, destroyers, gates)
             x = oldX;
             y = oldY;
             switchDirection();

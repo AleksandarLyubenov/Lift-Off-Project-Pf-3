@@ -25,11 +25,7 @@ public class RestartButton : Sprite
 
     void Update()
     {
-        if (Input.GetMouseButtonDown(0))
-        {
-            ((MyGame)game).LoadLevel("level1.tmx");
-            ((MyGame)game).Score = 0;
-        }
+
     }
 
     void ScoreCreator() // Creates the HUD in the bottom left of the screen

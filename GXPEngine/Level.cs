@@ -40,41 +40,45 @@ class Level : GameObject
         loader.rootObject = this;
         loader.LoadTileLayers(0);
         loader.addColliders = true;
-        loader.LoadTileLayers(1);
-        loader.LoadTileLayers(2); // loads tiles (ground, etc)
         loader.autoInstance = true;
         loader.LoadObjectGroups(); // Loads objects
+        loader.LoadTileLayers(1);
+        loader.LoadTileLayers(2); // loads tiles (ground, etc)
 
         player = FindObjectOfType<Player>();
+
+        ((MyGame)game).timerSeconds = 180;
     }
 
     void Update()
     {
         if (player != null)
         {
-            float playerScreenX = player.x + x; // Scrolling
-            if (playerScreenX > game.width / 2 + 32)
-            {
-                float overshoot = playerScreenX - (game.width / 2 + 32);
-                x -= overshoot / 15;
-            }
-            if (playerScreenX < game.width / 2 - 32)
-            {
-                float overshoot = -playerScreenX + (game.width / 2 - 32);
-                x += overshoot / 15;
-            }
+            float playerScreenX = player.x; // Scrolling
+            x = -playerScreenX + game.width/2;
+            //if (playerScreenX > game.width / 2 + 32)
+            //{
+            //    float overshoot = playerScreenX - (game.width / 2 + 32);
+            //    x -= overshoot / 15;
+            //}
+            //if (playerScreenX < game.width / 2 - 32)
+            //{
+            //    float overshoot = -playerScreenX + (game.width / 2 - 32);
+            //    x += overshoot / 15;
+            //}
 
-            float playerScreenY = player.y + y; // Scrolling
-            if (playerScreenY > game.height / 2 + 32)
-            {
-                float overshootY = playerScreenY - (game.height / 2 + 32);
-                y -= overshootY / 15;
-            }
-            if (playerScreenY < game.height / 2 - 32)
-            {
-                float overshootY = -playerScreenY + (game.height / 2 - 32);
-                y += overshootY / 15;
-            }
+            float playerScreenY = player.y; // Scrolling
+            y = -playerScreenY + game.height/2;
+            //if (playerScreenY > game.height / 2 + 32)
+            //{
+            //    float overshootY = playerScreenY - (game.height / 2 + 32);
+            //    y -= overshootY / 15;
+            //}
+            //if (playerScreenY < game.height / 2 - 32)
+            //{
+            //    float overshootY = -playerScreenY + (game.height / 2 - 32);
+            //    y += overshootY / 15;
+            //}
         }
     }
 }
