@@ -19,3 +19,10 @@ C:\Users\halox\Desktop\Lift Off Pf-3\Lift Off Project Pf-3\GXPEngine\obj\x86\Deb
 C:\Users\halox\Desktop\Lift Off Pf-3\Lift Off Project Pf-3\GXPEngine\obj\x86\Debug\GXPEngine.csproj.CoreCompileInputs.cache
 C:\Users\halox\Desktop\Lift Off Pf-3\Lift Off Project Pf-3\GXPEngine\obj\x86\Debug\GXPEngine.exe
 C:\Users\halox\Desktop\Lift Off Pf-3\Lift Off Project Pf-3\GXPEngine\obj\x86\Debug\GXPEngine.pdb
+C:\Users\halox\Desktop\Lift Off Pf-3\Lift Off Project Pf-3 Pre-Release 1\GXPEngine\bin\Debug\GXPEngine.exe.config
+C:\Users\halox\Desktop\Lift Off Pf-3\Lift Off Project Pf-3 Pre-Release 1\GXPEngine\bin\Debug\GXPEngine.exe
+C:\Users\halox\Desktop\Lift Off Pf-3\Lift Off Project Pf-3 Pre-Release 1\GXPEngine\bin\Debug\GXPEngine.pdb
+C:\Users\halox\Desktop\Lift Off Pf-3\Lift Off Project Pf-3 Pre-Release 1\GXPEngine\obj\x86\Debug\GXPEngine.csproj.AssemblyReference.cache
+C:\Users\halox\Desktop\Lift Off Pf-3\Lift Off Project Pf-3 Pre-Release 1\GXPEngine\obj\x86\Debug\GXPEngine.csproj.CoreCompileInputs.cache
+C:\Users\halox\Desktop\Lift Off Pf-3\Lift Off Project Pf-3 Pre-Release 1\GXPEngine\obj\x86\Debug\GXPEngine.exe
+C:\Users\halox\Desktop\Lift Off Pf-3\Lift Off Project Pf-3 Pre-Release 1\GXPEngine\obj\x86\Debug\GXPEngine.pdb

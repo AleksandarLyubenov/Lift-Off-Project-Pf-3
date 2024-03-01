@@ -38,12 +38,17 @@ class Level : GameObject
         loader.addColliders = false;
         loader.LoadImageLayers();
         loader.rootObject = this;
-        loader.LoadTileLayers(0);
-        loader.addColliders = true;
         loader.autoInstance = true;
+        loader.LoadTileLayers(0); // Ground
+        loader.LoadTileLayers(2); // Carpets
+        loader.addColliders = true;
         loader.LoadObjectGroups(); // Loads objects
-        loader.LoadTileLayers(1);
-        loader.LoadTileLayers(2); // loads tiles (ground, etc)
+        loader.LoadTileLayers(1); // Walls
+        loader.addColliders = false;
+        loader.LoadTileLayers(3); // WallDecor
+        loader.LoadTileLayers(4); // Cobwebs
+
+
 
         player = FindObjectOfType<Player>();
 

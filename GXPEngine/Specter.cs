@@ -24,7 +24,7 @@ public class Specter : AnimationSprite
 
     private SoundChannel hurt_enemy;
 
-    public Specter(int Px, int Py, TiledObject obj = null) : base("Stumbler_anim.png", 8, 8)
+    public Specter(int Px, int Py, TiledObject obj = null) : base("Shifter_anim.png", 8, 8)
     {
         x = Px;
         y = Py;
@@ -32,7 +32,7 @@ public class Specter : AnimationSprite
         directionSwitchTime = random.Next(2, 5);
     }
 
-    public Specter(TiledObject obj = null) : base("Stumbler_anim.png", 8, 8)
+    public Specter(TiledObject obj = null) : base("Shifter_anim.png", 8, 8)
     {
         collider.isTrigger = true;
         targetDistance = obj.GetFloatProperty("moveDistance");

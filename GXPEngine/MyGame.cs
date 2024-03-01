@@ -41,7 +41,7 @@ public class MyGame : Game {
     public int timerSeconds = 180;
     float elapsedTime = 0;
 
-    public MyGame() : base(1366, 768, false, false, 1366, 768, false)     // Create a window that's 800x600 and NOT fullscreen
+    public MyGame() : base(1366, 768, true, false, 1366, 768, false)     // Create a window that's 800x600 and NOT fullscreen
 	{
         //SetVSync(true);
         EasyDraw canvas = new EasyDraw(1366, 768, false);

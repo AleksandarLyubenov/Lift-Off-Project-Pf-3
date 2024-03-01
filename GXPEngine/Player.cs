@@ -31,15 +31,16 @@ public class Player : AnimationSprite
     public int energy;
     bool usingFlashlight = false;
     public int takenDamage = 0;
+    int direction = 0;
 
     //System.Random random = new System.Random();
-    public Player(string filename, int Px, int Py, TiledObject obj=null) : base("chick_player.png", 7, 2) // base(filename) - when player is a sprite
+    public Player(string filename, int Px, int Py, TiledObject obj=null) : base("MainCharacterAnim.png", 8, 8) // base(filename) - when player is a sprite
     {
         x = Px;
         y = Py;
     }
 
-    public Player(TiledObject obj = null) : base("chick_player.png",7,2)
+    public Player(TiledObject obj = null) : base("MainCharacterAnim.png", 8, 8)
     {
         resetLevelName = obj.GetStringProperty("resetLevelName", "mainmenu.tmx");
         jumpStrength = obj.GetFloatProperty("jumpStrength", 8.2f);
@@ -84,7 +85,68 @@ public class Player : AnimationSprite
                 ((MyGame)game).timerSeconds = 180;
             }
         }
-        
+
+        if (direction == 0)
+        {
+            if (counter <= 16)
+            {
+                frame++;
+                if (frame > 15) // 3 - end of walking to the right
+                {
+                    frame = 0;
+                }
+            }
+            else
+            {
+                counter = 0;
+            }
+        }
+        else if (direction == 1)
+        {
+            if (counter <= 16)
+            {
+                frame++;
+                if (frame > 31) // 3 - end of walking to the right
+                {
+                    frame = 16;
+                }
+            }
+            else
+            {
+                counter = 0;
+            }
+        }
+        else if (direction == 2)
+        {
+            if (counter <= 16)
+            {
+                frame++;
+                if (frame > 63) // 3 - end of walking to the right
+                {
+                    frame = 48;
+                }
+            }
+            else
+            {
+                counter = 0;
+            }
+        }
+        else if (direction == 3)
+        {
+            if (counter <= 16)
+            {
+                frame++;
+                if (frame > 47) // 3 - end of walking to the right
+                {
+                    frame = 32;
+                }
+            }
+            else
+            {
+                counter = 0;
+            }
+        }
+
         MoveUntilCollision(moveTo.x, 0);
         MoveUntilCollision(0, moveTo.y);
 
@@ -103,69 +165,31 @@ public class Player : AnimationSprite
         if (Input.GetKey(Key.A)) // && !(Input.GetKey(Key.LEFT_SHIFT)))
         {
             moveTo.x = -speed;
-
-            if (counter < 16)
-            {
-                frame++;
-                if (frame == 13) // 13 - end of walking to the left
-                {
-                    frame = 10;
-                }
-                SetFrame(frame); // AnimationSprite method
-            }
+            direction = 0;
         }
         else if (Input.GetKey(Key.D)) // && !(Input.GetKey(Key.LEFT_SHIFT)))
         {
             moveTo.x = speed;
-
-            if (counter < 16)
-            {
-                frame++;
-                if (frame == 3) // 3 - end of walking to the right
-                {
-                    frame = 0;
-                }
-                SetFrame(frame); // AnimationSprite method
-            }
+            direction = 1;
         }
         else
         {
             moveTo.x = 0;
-            frame = 0;
         }
 
         if (Input.GetKey(Key.S)) // && !(Input.GetKey(Key.LEFT_SHIFT)))
         {
             moveTo.y = speed;
-
-            if (counter < 16)
-            {
-                frame++;
-                if (frame == 3) // 3 - end of walking to the right
-                {
-                    frame = 0;
-                }
-                SetFrame(frame); // AnimationSprite method
-            }
+            direction = 3;
         }
         else if (Input.GetKey(Key.W)) // && !(Input.GetKey(Key.LEFT_SHIFT)))
         {
             moveTo.y = -speed;
-
-            if (counter < 16)
-            {
-                frame++;
-                if (frame == 13) // 13 - end of walking to the left
-                {
-                    frame = 10;
-                }
-                 // AnimationSprite method
-            }
+            direction = 2;
         }
         else
         {
             moveTo.y = 0;
-            frame = 0;
         }
 
         GameObject[] collisions = GetCollisions();
@@ -202,7 +226,7 @@ public class Player : AnimationSprite
                 {
                     Console.WriteLine("Already at full health!");
                 }
-                else if (health < 2 && health > 0)
+                else if (health < 2 && health >= 0)
                 {
                     collisions[i].Destroy();
                     health++;
